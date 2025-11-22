@@ -7,6 +7,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 
 import { ConfigService, AppConfig } from '../../core/services/config.service';
@@ -23,7 +24,8 @@ import { getCurrentRedirectUri, getEnvironmentName } from '../../core/utils/envi
     MatChipsModule,
     MatFormFieldModule,
     MatIconModule,
-    MatInputModule
+    MatInputModule,
+    MatSnackBarModule
   ],
   templateUrl: './config.component.html',
   styleUrl: './config.component.scss'
@@ -32,6 +34,7 @@ export class ConfigComponent {
   private readonly configService = inject(ConfigService);
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
+  private readonly snackBar = inject(MatSnackBar);
 
   configForm: FormGroup;
 
@@ -126,6 +129,34 @@ export class ConfigComponent {
       }
     }
     return null;
+  }
+
+  /**
+   * Clear configuration from localStorage
+   */
+  clearConfig(): void {
+    if (confirm('Are you sure you want to delete the configuration? This will clear all saved Azure AD credentials and you will need to reconfigure the application.')) {
+      this.configService.clearConfig();
+      this.snackBar.open('Configuration cleared successfully', 'Close', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top'
+      });
+      
+      // Reset form
+      this.configForm.reset({
+        tenantId: '',
+        clientId: '',
+        redirectUri: getCurrentRedirectUri()
+      });
+      this.generatedScopes.set([]);
+      
+      // Reload page to reset MSAL and app state
+      setTimeout(() => {
+        const baseHref = document.querySelector('base')?.getAttribute('href') || '/';
+        window.location.href = baseHref;
+      }, 1000);
+    }
   }
 }
 
