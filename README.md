@@ -8,7 +8,7 @@ A lightweight Angular web application for viewing and managing Azure AD access t
 - 📋 **Token Display** - View raw JWT tokens with copy-to-clipboard functionality
 - 🔍 **Token Decoding** - Automatically decode and display JWT token claims in a readable format
 - 🔄 **Token Refresh** - Manually refresh access tokens with detailed Azure endpoint information
-- ⚙️ **Runtime Configuration** - Configure Azure AD credentials and API endpoints via UI (no code changes needed)
+- ⚙️ **Runtime Configuration** - Configure Azure AD credentials via UI (no code changes needed)
 - 🎨 **Material Design** - Clean, modern UI built with Angular Material
 - 📊 **Debug Information** - View detailed Azure endpoint calls and responses during token refresh
 
@@ -36,10 +36,9 @@ A lightweight Angular web application for viewing and managing Azure AD access t
 
 On first launch, the application will redirect you to the configuration page where you need to provide:
 
-1. **API Base URL** - The base URL of your backend API (e.g., `https://localhost:7001`)
-2. **Tenant ID** - Your Azure AD tenant ID (Directory ID)
-3. **Client ID** - Your Azure AD application (client) ID
-4. **Redirect URI** - The redirect URI registered in Azure AD (defaults to current origin)
+1. **Tenant ID** - Your Azure AD tenant ID (Directory ID)
+2. **Client ID** - Your Azure AD application (client) ID
+3. **Redirect URI** - The redirect URI registered in Azure AD (defaults to current origin)
 
 The application will automatically generate API scopes based on your Client ID:
 - `api://{clientId}/Relia.Create`
@@ -102,7 +101,7 @@ The application is configured to use HTTPS by default (check `angular.json` for 
    ```
    (depending on your configuration)
 
-3. If this is your first time, you'll be redirected to the configuration page. Enter your Azure AD credentials and API base URL.
+3. If this is your first time, you'll be redirected to the configuration page. Enter your Azure AD credentials.
 
 4. Click **"Initialize Application"** to save the configuration.
 
@@ -219,7 +218,7 @@ The app uses MSAL Angular for authentication:
 
 ### HTTP Interceptor
 
-The `msalInterceptor` automatically attaches Azure AD access tokens to outgoing HTTP requests that target the configured backend API base URL.
+The `msalInterceptor` automatically attaches Azure AD access tokens to outgoing HTTP requests.
 
 ## Troubleshooting
 

@@ -64,7 +64,6 @@ export class ConfigComponent {
     const existingConfig = this.configService.getConfig();
 
     this.configForm = this.fb.group({
-      apiBaseUrl: [existingConfig?.api.apiBaseUrl || '', [Validators.required, Validators.pattern(/^https?:\/\/.+/)]],
       tenantId: [existingConfig?.azure.tenantId || '', Validators.required],
       clientId: [existingConfig?.azure.clientId || '', Validators.required],
       redirectUri: [existingConfig?.azure.redirectUri || getCurrentRedirectUri(), Validators.required]
@@ -111,9 +110,6 @@ export class ConfigComponent {
     const apiScopes = this.generatedScopes();
 
     const config: AppConfig = {
-      api: {
-        apiBaseUrl: formValue.apiBaseUrl.trim()
-      },
       azure: {
         tenantId,
         clientId,

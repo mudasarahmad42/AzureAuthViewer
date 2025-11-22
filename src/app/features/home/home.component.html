@@ -53,6 +53,23 @@
                   <span><strong>Expires at:</strong> {{ profileExpiresAt() | date:'medium' }}</span>
                 </div>
               }
+              @if (tokenLifetime() !== null) {
+                <div class="home__profile-meta">
+                  <mat-icon class="home__profile-icon">timer</mat-icon>
+                  <span><strong>Token lifetime:</strong> {{ formatDuration(tokenLifetime()) }}</span>
+                </div>
+              }
+              @if (remainingLifetime() !== null) {
+                <div class="home__profile-meta">
+                  <mat-icon class="home__profile-icon" [style.color]="remainingLifetime()! < 300000 ? 'red' : remainingLifetime()! < 900000 ? 'orange' : ''">hourglass_empty</mat-icon>
+                  <span [style.color]="remainingLifetime()! < 300000 ? 'red' : remainingLifetime()! < 900000 ? 'orange' : ''">
+                    <strong>Remaining:</strong> {{ formatDuration(remainingLifetime()) }}
+                    @if (remainingLifetime() === 0) {
+                      <strong> (Expired)</strong>
+                    }
+                  </span>
+                </div>
+              }
             </div>
           </div>
         }

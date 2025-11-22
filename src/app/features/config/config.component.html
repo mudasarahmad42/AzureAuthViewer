@@ -2,33 +2,11 @@
   <mat-card appearance="outlined">
     <mat-card-header>
       <mat-card-title>Application Configuration</mat-card-title>
-      <mat-card-subtitle>Configure API endpoints and Azure AD credentials</mat-card-subtitle>
+      <mat-card-subtitle>Configure Azure AD credentials</mat-card-subtitle>
     </mat-card-header>
 
     <mat-card-content>
       <form [formGroup]="configForm" (ngSubmit)="onSubmit()">
-        <div class="config__section">
-          <h3>
-            <mat-icon>api</mat-icon>
-            API Configuration
-          </h3>
-
-          <mat-form-field appearance="outline" class="config__field">
-            <mat-label>API Base URL</mat-label>
-            <input
-              matInput
-              formControlName="apiBaseUrl"
-              placeholder="https://localhost:5001"
-              required
-            />
-            <mat-hint>The base URL of your backend API</mat-hint>
-            @if (getFormControlError('apiBaseUrl')) {
-              <mat-error>{{ getFormControlError('apiBaseUrl') }}</mat-error>
-            }
-          </mat-form-field>
-
-        </div>
-
         <div class="config__section">
           <h3>
             <mat-icon>security</mat-icon>
@@ -40,7 +18,6 @@
             <input
               matInput
               formControlName="tenantId"
-              placeholder="176ad305-0f3d-4fb0-aace-442c98f5a749"
               required
             />
             <mat-hint>Your Azure AD tenant ID</mat-hint>
@@ -54,7 +31,6 @@
             <input
               matInput
               formControlName="clientId"
-              placeholder="3184f1ac-44b5-4825-beea-7b00e94777e7"
               required
             />
             <mat-hint>Your Azure AD application (client) ID</mat-hint>

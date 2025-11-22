@@ -7,23 +7,34 @@ import { ConfigService } from '../services/config.service';
 
 /**
  * MSAL HTTP Interceptor
- * Automatically attaches the Azure AD access token to outgoing API requests
- * that target the configured backend API base URL.
+ * Automatically attaches the Azure AD access token to outgoing API requests.
  */
 export const msalInterceptor: HttpInterceptorFn = (req, next) => {
   const msalService = inject(MsalService);
   const configService = inject(ConfigService);
 
-  const apiConfig = configService.apiConfig();
   const azureConfig = configService.azureConfig();
-
-  // Only attach token to requests to the backend API
-  if (!apiConfig?.apiBaseUrl || !req.url.startsWith(apiConfig.apiBaseUrl)) {
-    return next(req);
-  }
 
   if (!azureConfig) {
     return next(req);
+  }
+
+  // Only attach token to relative URLs or same-origin requests
+  // Skip external URLs (CDNs, etc.)
+  const url = req.url;
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    // Absolute URL - check if it's same origin
+    try {
+      const requestUrl = new URL(url);
+      const currentOrigin = window.location.origin;
+      if (requestUrl.origin !== currentOrigin) {
+        // External URL, skip token attachment
+        return next(req);
+      }
+    } catch {
+      // Invalid URL, skip token attachment
+      return next(req);
+    }
   }
 
   // Get the active account

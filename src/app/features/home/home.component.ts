@@ -1,5 +1,5 @@
 import { CommonModule, DatePipe } from '@angular/common';
-import { Component, computed, effect, inject } from '@angular/core';
+import { Component, computed, effect, inject, signal } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
@@ -120,12 +120,73 @@ export class HomeComponent {
     return null;
   });
 
+  // Token lifetime (total duration in milliseconds)
+  protected readonly tokenLifetime = computed(() => {
+    const issuedAt = this.profileIssuedAt();
+    const expiresAt = this.profileExpiresAt();
+    if (!issuedAt || !expiresAt) return null;
+    return expiresAt.getTime() - issuedAt.getTime();
+  });
+
+  // Current time signal for real-time updates
+  private readonly currentTime = signal(Date.now());
+
+  // Remaining lifetime in milliseconds (updates in real-time)
+  protected readonly remainingLifetime = computed(() => {
+    const expiresAt = this.profileExpiresAt();
+    if (!expiresAt) return null;
+    const now = this.currentTime();
+    const remaining = expiresAt.getTime() - now;
+    return remaining > 0 ? remaining : 0;
+  });
+
+  // Helper function to format duration in human-readable format
+  protected formatDuration(ms: number | null): string {
+    if (ms === null || ms < 0) return 'N/A';
+    
+    const seconds = Math.floor(ms / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+
+    if (days > 0) {
+      const remainingHours = hours % 24;
+      if (remainingHours > 0) {
+        return `${days}d ${remainingHours}h`;
+      }
+      return `${days}d`;
+    }
+    
+    if (hours > 0) {
+      const remainingMinutes = minutes % 60;
+      if (remainingMinutes > 0) {
+        return `${hours}h ${remainingMinutes}m`;
+      }
+      return `${hours}h`;
+    }
+    
+    if (minutes > 0) {
+      const remainingSeconds = seconds % 60;
+      if (remainingSeconds > 0) {
+        return `${minutes}m ${remainingSeconds}s`;
+      }
+      return `${minutes}m`;
+    }
+    
+    return `${seconds}s`;
+  }
+
   constructor() {
     // Update the decoder when the token changes
     effect(() => {
       const token = this.token();
       this.decoder.updateToken(token);
     });
+
+    // Update current time every second for real-time remaining lifetime display
+    setInterval(() => {
+      this.currentTime.set(Date.now());
+    }, 1000);
   }
 
   login(): void {

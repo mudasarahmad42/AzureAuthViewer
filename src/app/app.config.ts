@@ -113,8 +113,9 @@ export function MSALInterceptorConfigFactory(): MsalInterceptorConfiguration {
     const stored = localStorage.getItem('app_config');
     if (stored) {
       const config = JSON.parse(stored);
-      if (config?.api?.apiBaseUrl && config?.azure?.apiScopes) {
-        protectedResourceMap.set(config.api.apiBaseUrl, config.azure.apiScopes);
+      if (config?.azure?.apiScopes) {
+        // Attach token to all relative URLs and same-origin requests
+        protectedResourceMap.set(window.location.origin, config.azure.apiScopes);
       }
     }
   } catch {

@@ -1,10 +1,6 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { getCurrentRedirectUri } from '../utils/environment.util';
 
-export interface ApiConfig {
-  apiBaseUrl: string;
-}
-
 export interface AzureConfig {
   tenantId: string;
   clientId: string;
@@ -14,7 +10,6 @@ export interface AzureConfig {
 }
 
 export interface AppConfig {
-  api: ApiConfig;
   azure: AzureConfig;
 }
 
@@ -28,7 +23,6 @@ export class ConfigService {
   private readonly config = signal<AppConfig | null>(null);
 
   readonly isConfigured = computed(() => this.config() !== null);
-  readonly apiConfig = computed(() => this.config()?.api ?? null);
   readonly azureConfig = computed(() => this.config()?.azure ?? null);
 
   constructor() {
@@ -130,8 +124,6 @@ export class ConfigService {
     return (
       config &&
       typeof config === 'object' &&
-      config.api &&
-      typeof config.api.apiBaseUrl === 'string' &&
       config.azure &&
       typeof config.azure.tenantId === 'string' &&
       typeof config.azure.clientId === 'string' &&
