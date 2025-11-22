@@ -56,17 +56,12 @@ The application will automatically generate API scopes based on your Client ID:
 4. Go to **Authentication** section:
    - If you see a **Web** platform configuration, delete it
    - Click **"Add a platform"** → Select **"Single-page application"**
-   - **Add ALL of these redirect URIs** (for both local testing and production):
-     - `http://localhost:4200` (for local HTTP development)
-     - `https://localhost:4200` (for local HTTPS development)
-     - `https://mudasarahmad42.github.io/AzureAuthViewer` (for GitHub Pages production)
-   - Adding all redirect URIs allows you to test locally and deploy without changing Azure AD settings
+   - **Add this redirect URI:**
+     - `https://mudasarahmad42.github.io/AzureAuthViewer`
    - Click **Configure**
 5. Under **API permissions**:
    - Add permission to your backend API
    - Grant admin consent if required
-
-**Common Error**: If you see `AADSTS9002326: Cross-origin token redemption is permitted only for the 'Single-Page Application' client-type`, it means your app registration is configured as a Web app instead of SPA. Follow step 4 above to fix it.
 
 ### Step 3: Running with HTTPS (Optional)
 
@@ -236,13 +231,10 @@ The `msalInterceptor` automatically attaches Azure AD access tokens to outgoing 
   - Add a Single-page application platform with correct redirect URIs
 
 - **Redirect URI mismatch**: 
-  - The app automatically detects the correct redirect URI based on the environment (local vs GitHub Pages)
-  - Make sure you've added ALL redirect URIs to Azure AD:
-    - `http://localhost:4200` (for local HTTP)
-    - `https://localhost:4200` (for local HTTPS)
+  - The app automatically detects the correct redirect URI based on the environment
+  - Make sure you've added the redirect URI to Azure AD:
     - `https://mudasarahmad42.github.io/AzureAuthViewer` (for GitHub Pages)
   - The app will use the appropriate redirect URI based on where it's running
-  - Check that the protocol (http/https) matches your dev server configuration when testing locally
 
 - **Invalid scope**: 
   - Verify the generated API scopes match your backend API's app ID
@@ -282,8 +274,7 @@ The `msalInterceptor` automatically attaches Azure AD access tokens to outgoing 
 
 3. Deploy the `dist/` folder to your hosting provider
 
-4. **Important**: Add all redirect URIs to Azure Portal (both local and production):
-   - Add `http://localhost:4200` and `https://localhost:4200` for local testing
+4. **Important**: Add the redirect URI to Azure Portal:
    - Add `https://mudasarahmad42.github.io/AzureAuthViewer` for GitHub Pages
    - The app automatically uses the correct redirect URI based on the environment
 

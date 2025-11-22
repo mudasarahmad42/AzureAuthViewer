@@ -47,21 +47,17 @@ export function getCurrentRedirectUri(): string {
 
 /**
  * Get all possible redirect URIs for Azure AD configuration
- * This includes both local development and production URLs
+ * Returns only production URLs (no localhost)
  */
 export function getAllRedirectUris(): string[] {
   const uris: string[] = [];
   
-  // Always include local development URLs
-  uris.push('http://localhost:4200');
-  uris.push('https://localhost:4200');
-  
-  // Include GitHub Pages URL if we're deploying there
+  // Include GitHub Pages URL
   uris.push('https://mudasarahmad42.github.io/AzureAuthViewer');
   
-  // Add current URL if it's not already in the list
+  // Add current URL if it's not already in the list and not localhost
   const current = getCurrentRedirectUri();
-  if (!uris.includes(current)) {
+  if (!uris.includes(current) && !isLocalhost()) {
     uris.push(current);
   }
   
