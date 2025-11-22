@@ -73,6 +73,22 @@ git push -u origin main
 4. Under **Source**, select **GitHub Actions** (not "Deploy from a branch")
 5. The workflow will automatically run when you push to `main` or `master` branch
 
+## Step 4a: Fix Environment Protection Rules (If Needed)
+
+If you see an error: **"Branch 'main' is not allowed to deploy to github-pages due to environment protection rules"**, follow these steps:
+
+1. Go to your GitHub repository on GitHub.com
+2. Click on **Settings** tab
+3. Scroll down to **Environments** in the left sidebar (under "Code and automation")
+4. Click on **github-pages** environment
+5. Under **Deployment branches**, make sure **"All branches"** is selected, OR
+6. Add **main** (and **master** if needed) to the **"Selected branches"** list
+7. Click **Save protection rules**
+
+Alternatively, you can:
+- Remove the branch restriction entirely
+- Or disable environment protection rules if not needed
+
 ## Step 5: Wait for Deployment
 
 1. Go to the **Actions** tab in your repository
@@ -117,6 +133,13 @@ You can also trigger the deployment manually:
 - Clear your browser cache
 - Check that the workflow completed successfully
 - Verify the Pages source is set to "GitHub Actions"
+
+### Environment Protection Rules Error
+If you see: **"Branch 'main' is not allowed to deploy to github-pages due to environment protection rules"**:
+1. Go to **Settings** → **Environments** → **github-pages**
+2. Under **Deployment branches**, select **"All branches"** or add **main** to allowed branches
+3. Save the changes
+4. Re-run the workflow from the Actions tab
 
 ## Local Testing
 
