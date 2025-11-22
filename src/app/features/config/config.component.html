@@ -1,0 +1,148 @@
+<section class="config">
+  <mat-card appearance="outlined">
+    <mat-card-header>
+      <mat-card-title>Application Configuration</mat-card-title>
+      <mat-card-subtitle>Configure API endpoints and Azure AD credentials</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="configForm" (ngSubmit)="onSubmit()">
+        <div class="config__section">
+          <h3>
+            <mat-icon>api</mat-icon>
+            API Configuration
+          </h3>
+
+          <mat-form-field appearance="outline" class="config__field">
+            <mat-label>API Base URL</mat-label>
+            <input
+              matInput
+              formControlName="apiBaseUrl"
+              placeholder="https://localhost:5001"
+              required
+            />
+            <mat-hint>The base URL of your backend API</mat-hint>
+            @if (getFormControlError('apiBaseUrl')) {
+              <mat-error>{{ getFormControlError('apiBaseUrl') }}</mat-error>
+            }
+          </mat-form-field>
+
+        </div>
+
+        <div class="config__section">
+          <h3>
+            <mat-icon>security</mat-icon>
+            Azure AD Configuration
+          </h3>
+
+          <mat-form-field appearance="outline" class="config__field">
+            <mat-label>Tenant ID</mat-label>
+            <input
+              matInput
+              formControlName="tenantId"
+              placeholder="176ad305-0f3d-4fb0-aace-442c98f5a749"
+              required
+            />
+            <mat-hint>Your Azure AD tenant ID</mat-hint>
+            @if (getFormControlError('tenantId')) {
+              <mat-error>{{ getFormControlError('tenantId') }}</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="config__field">
+            <mat-label>Client ID (Application ID)</mat-label>
+            <input
+              matInput
+              formControlName="clientId"
+              placeholder="3184f1ac-44b5-4825-beea-7b00e94777e7"
+              required
+            />
+            <mat-hint>Your Azure AD application (client) ID</mat-hint>
+            @if (getFormControlError('clientId')) {
+              <mat-error>{{ getFormControlError('clientId') }}</mat-error>
+            }
+          </mat-form-field>
+
+          @if (generatedScopes().length > 0) {
+            <div class="config__scopes">
+              <strong>Generated API Scopes:</strong>
+              <div class="config__scopes-list">
+                @for (scope of generatedScopes(); track scope) {
+                  <mat-chip>{{ scope }}</mat-chip>
+                }
+              </div>
+            </div>
+          }
+
+          <mat-form-field appearance="outline" class="config__field">
+            <mat-label>Redirect URI</mat-label>
+            <input
+              matInput
+              formControlName="redirectUri"
+              placeholder="http://localhost:4200"
+              required
+            />
+            <mat-hint>The redirect URI registered in Azure AD (must match the platform type)</mat-hint>
+            @if (getFormControlError('redirectUri')) {
+              <mat-error>{{ getFormControlError('redirectUri') }}</mat-error>
+            }
+          </mat-form-field>
+
+          <div class="config__help">
+            <details>
+              <summary>
+                <mat-icon>help_outline</mat-icon>
+                <strong>Azure AD Setup Instructions</strong>
+              </summary>
+              <div class="config__help-content">
+                <p><strong>Important:</strong> Your Azure AD app registration must be configured as a <strong>Single-Page Application (SPA)</strong>, not a Web application.</p>
+                
+                <ol>
+                  <li>Go to <a href="https://portal.azure.com" target="_blank">Azure Portal</a> → Azure Active Directory → App registrations</li>
+                  <li>Select your app (Client ID: <code>{{ configForm.get('clientId')?.value || 'your-client-id' }}</code>)</li>
+                  <li>Go to <strong>Authentication</strong> section</li>
+                  <li>Under <strong>Platform configurations</strong>:
+                    <ul>
+                      <li>If you see a <strong>Web</strong> platform, delete it</li>
+                      <li>Click <strong>"Add a platform"</strong> → Select <strong>"Single-page application"</strong></li>
+                      <li>Add the redirect URI: <code>{{ configForm.get('redirectUri')?.value || 'http://localhost:4200' }}</code></li>
+                      <li>If using HTTPS: Also add <code>https://localhost:4200</code></li>
+                      <li>Click <strong>Configure</strong></li>
+                    </ul>
+                  </li>
+                  <li>Under <strong>API permissions</strong>:
+                    <ul>
+                      <li>Add permission to your backend API</li>
+                      <li>Grant admin consent if required</li>
+                    </ul>
+                  </li>
+                </ol>
+
+                <div class="config__help-note">
+                  <mat-icon>warning</mat-icon>
+                  <div>
+                    <strong>Common Error:</strong> If you see "AADSTS9002326: Cross-origin token redemption is permitted only for the 'Single-Page Application' client-type", 
+                    it means your app registration is configured as a Web app instead of SPA. Follow the steps above to fix it.
+                  </div>
+                </div>
+              </div>
+            </details>
+          </div>
+        </div>
+
+        <div class="config__actions">
+          <button
+            mat-flat-button
+            color="primary"
+            type="submit"
+            [disabled]="configForm.invalid || configForm.pending"
+          >
+            <mat-icon>check_circle</mat-icon>
+            Initialize Application
+          </button>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</section>
+
