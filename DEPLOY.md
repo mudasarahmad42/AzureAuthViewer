@@ -2,6 +2,36 @@
 
 This guide will help you deploy the Angular application to GitHub Pages using GitHub Actions.
 
+## Quick Deploy (Easiest Method)
+
+### Windows (PowerShell):
+```powershell
+npm run deploy
+```
+
+Or with a custom commit message:
+```powershell
+.\deploy.ps1 "Your commit message here"
+```
+
+### Linux/Mac (Bash):
+```bash
+chmod +x deploy.sh
+./deploy.sh
+```
+
+Or with a custom commit message:
+```bash
+./deploy.sh "Your commit message here"
+```
+
+The script will automatically:
+1. Stage all changes
+2. Commit with your message (or default)
+3. Push to GitHub
+4. Trigger the GitHub Actions workflow
+5. Deploy to GitHub Pages
+
 ## Prerequisites
 
 1. A GitHub repository (create one if you don't have it yet)
@@ -76,7 +106,7 @@ You can also trigger the deployment manually:
 
 ### Workflow fails to build
 - Check the Actions tab for error messages
-- Ensure Node.js version is compatible (workflow uses Node 18)
+- Ensure Node.js version is compatible (workflow uses Node 20 - Angular CLI requires v20.19+ or v22.12+)
 - Verify all dependencies are in package.json
 
 ### 404 errors on routes
