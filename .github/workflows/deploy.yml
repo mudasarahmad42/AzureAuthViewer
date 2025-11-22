@@ -39,7 +39,7 @@ jobs:
       - name: Build
         run: |
           REPO_NAME="${{ steps.repo.outputs.name }}"
-          ng build --configuration production --base-href /${REPO_NAME}/
+          npx ng build --configuration production --base-href /${REPO_NAME}/
 
       - name: Create 404.html for routing
         run: |
