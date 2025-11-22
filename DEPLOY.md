@@ -60,9 +60,24 @@ Replace `YOUR_USERNAME` and `YOUR_REPO_NAME` with your actual GitHub username an
 
 ## Step 3: Push Code to GitHub
 
+The workflow is configured to run only when changes are pushed to the `gh-pages` branch.
+
+### Option A: Push to gh-pages directly (for deployment)
 ```bash
-git branch -M main  # or master, depending on your default branch
-git push -u origin main
+git checkout -b gh-pages  # Create gh-pages branch if it doesn't exist
+git push -u origin gh-pages
+```
+
+### Option B: Merge main into gh-pages (recommended workflow)
+```bash
+# Work on main branch for development
+git checkout main
+git push origin main
+
+# When ready to deploy, merge main into gh-pages
+git checkout gh-pages
+git merge main
+git push origin gh-pages  # This will trigger the deployment
 ```
 
 ## Step 4: Enable GitHub Pages
@@ -71,19 +86,20 @@ git push -u origin main
 2. Click on **Settings** tab
 3. Scroll down to **Pages** in the left sidebar
 4. Under **Source**, select **GitHub Actions** (not "Deploy from a branch")
-5. The workflow will automatically run when you push to `main` or `master` branch
+5. The workflow will automatically run when you push to `gh-pages` branch
 
 ## Step 4a: Fix Environment Protection Rules (If Needed)
 
-If you see an error: **"Branch 'main' is not allowed to deploy to github-pages due to environment protection rules"**, follow these steps:
+If you see an error: **"Branch 'gh-pages' is not allowed to deploy to github-pages due to environment protection rules"**, follow these steps:
 
 1. Go to your GitHub repository on GitHub.com
 2. Click on **Settings** tab
 3. Scroll down to **Environments** in the left sidebar (under "Code and automation")
 4. Click on **github-pages** environment
-5. Under **Deployment branches**, make sure **"All branches"** is selected, OR
-6. Add **main** (and **master** if needed) to the **"Selected branches"** list
-7. Click **Save protection rules**
+5. Under **Deployment branches**:
+   - Select **"Selected branches"** radio button
+   - Add **gh-pages** to the allowed branches list
+6. Click **Save protection rules**
 
 Alternatively, you can:
 - Remove the branch restriction entirely
@@ -135,9 +151,9 @@ You can also trigger the deployment manually:
 - Verify the Pages source is set to "GitHub Actions"
 
 ### Environment Protection Rules Error
-If you see: **"Branch 'main' is not allowed to deploy to github-pages due to environment protection rules"**:
+If you see: **"Branch 'gh-pages' is not allowed to deploy to github-pages due to environment protection rules"**:
 1. Go to **Settings** → **Environments** → **github-pages**
-2. Under **Deployment branches**, select **"All branches"** or add **main** to allowed branches
+2. Under **Deployment branches**, select **"Selected branches"** and add **gh-pages** to allowed branches
 3. Save the changes
 4. Re-run the workflow from the Actions tab
 

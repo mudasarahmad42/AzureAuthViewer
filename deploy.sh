@@ -22,7 +22,7 @@ fi
 CURRENT_BRANCH=$(git branch --show-current)
 echo "📋 Current branch: $CURRENT_BRANCH"
 
-# Check for uncommitted changes
+# Check for uncommitted changes on current branch
 if [ -n "$(git status --porcelain)" ]; then
     echo "📝 Staging changes..."
     git add .
@@ -35,12 +35,35 @@ if [ -n "$(git status --porcelain)" ]; then
         exit 1
     fi
 else
-    echo "ℹ️  No changes to commit"
+    echo "ℹ️  No changes to commit on current branch"
 fi
 
-# Push to remote
-echo "📤 Pushing to origin/$CURRENT_BRANCH..."
-git push origin "$CURRENT_BRANCH"
+# Switch to gh-pages branch (create if it doesn't exist)
+echo "🔄 Switching to gh-pages branch..."
+if ! git show-ref --verify --quiet refs/heads/gh-pages; then
+    echo "📦 Creating gh-pages branch..."
+    git checkout -b gh-pages
+else
+    git checkout gh-pages
+    if [ $? -ne 0 ]; then
+        echo "❌ Failed to checkout gh-pages branch"
+        exit 1
+    fi
+    
+    # Merge current branch into gh-pages
+    if [ "$CURRENT_BRANCH" != "gh-pages" ]; then
+        echo "🔀 Merging $CURRENT_BRANCH into gh-pages..."
+        git merge "$CURRENT_BRANCH" --no-edit
+        if [ $? -ne 0 ]; then
+            echo "⚠️  Merge conflict or error. Please resolve manually."
+            exit 1
+        fi
+    fi
+fi
+
+# Push to remote gh-pages branch
+echo "📤 Pushing to origin/gh-pages..."
+git push origin gh-pages
 
 if [ $? -eq 0 ]; then
     echo ""

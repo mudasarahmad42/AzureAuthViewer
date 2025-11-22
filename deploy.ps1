@@ -21,9 +21,9 @@ if (-not (Test-Path .git)) {
 
 # Get current branch
 $currentBranch = git branch --show-current
-Write-Host " branch: $currentBranch" -ForegroundColor Yellow
+Write-Host "📋 Current branch: $currentBranch" -ForegroundColor Yellow
 
-# Check for uncommitted changes
+# Check for uncommitted changes on current branch
 $status = git status --porcelain
 if ($status) {
     Write-Host "📝 Staging changes..." -ForegroundColor Yellow
@@ -37,12 +37,36 @@ if ($status) {
         exit 1
     }
 } else {
-    Write-Host "ℹ️  No changes to commit" -ForegroundColor Gray
+    Write-Host "ℹ️  No changes to commit on current branch" -ForegroundColor Gray
 }
 
-# Push to remote
-Write-Host "📤 Pushing to origin/$currentBranch..." -ForegroundColor Yellow
-git push origin $currentBranch
+# Switch to gh-pages branch (create if it doesn't exist)
+Write-Host "🔄 Switching to gh-pages branch..." -ForegroundColor Yellow
+$ghPagesExists = git show-ref --verify --quiet refs/heads/gh-pages
+if ($LASTEXITCODE -ne 0) {
+    Write-Host "📦 Creating gh-pages branch..." -ForegroundColor Yellow
+    git checkout -b gh-pages
+} else {
+    git checkout gh-pages
+    if ($LASTEXITCODE -ne 0) {
+        Write-Host "❌ Failed to checkout gh-pages branch" -ForegroundColor Red
+        exit 1
+    }
+    
+    # Merge current branch into gh-pages
+    if ($currentBranch -ne "gh-pages") {
+        Write-Host "🔀 Merging $currentBranch into gh-pages..." -ForegroundColor Yellow
+        git merge $currentBranch --no-edit
+        if ($LASTEXITCODE -ne 0) {
+            Write-Host "⚠️  Merge conflict or error. Please resolve manually." -ForegroundColor Red
+            exit 1
+        }
+    }
+}
+
+# Push to remote gh-pages branch
+Write-Host "📤 Pushing to origin/gh-pages..." -ForegroundColor Yellow
+git push origin gh-pages
 
 if ($LASTEXITCODE -eq 0) {
     Write-Host "✅ Successfully pushed to GitHub!" -ForegroundColor Green
