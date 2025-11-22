@@ -57,9 +57,11 @@ The application will automatically generate API scopes based on your Client ID:
 4. Go to **Authentication** section:
    - If you see a **Web** platform configuration, delete it
    - Click **"Add a platform"** → Select **"Single-page application"**
-   - Add redirect URIs:
-     - `http://localhost:4200` (for HTTP)
-     - `https://localhost:4200` (for HTTPS, if using SSL)
+   - **Add ALL of these redirect URIs** (for both local testing and production):
+     - `http://localhost:4200` (for local HTTP development)
+     - `https://localhost:4200` (for local HTTPS development)
+     - `https://mudasarahmad42.github.io/AzureAuthViewer` (for GitHub Pages production)
+   - Adding all redirect URIs allows you to test locally and deploy without changing Azure AD settings
    - Click **Configure**
 5. Under **API permissions**:
    - Add permission to your backend API
@@ -235,8 +237,13 @@ The `msalInterceptor` automatically attaches Azure AD access tokens to outgoing 
   - Add a Single-page application platform with correct redirect URIs
 
 - **Redirect URI mismatch**: 
-  - Ensure the redirect URI in Azure AD matches exactly: `http://localhost:4200` or `https://localhost:4200`
-  - Check that the protocol (http/https) matches your dev server configuration
+  - The app automatically detects the correct redirect URI based on the environment (local vs GitHub Pages)
+  - Make sure you've added ALL redirect URIs to Azure AD:
+    - `http://localhost:4200` (for local HTTP)
+    - `https://localhost:4200` (for local HTTPS)
+    - `https://mudasarahmad42.github.io/AzureAuthViewer` (for GitHub Pages)
+  - The app will use the appropriate redirect URI based on where it's running
+  - Check that the protocol (http/https) matches your dev server configuration when testing locally
 
 - **Invalid scope**: 
   - Verify the generated API scopes match your backend API's app ID
@@ -276,7 +283,10 @@ The `msalInterceptor` automatically attaches Azure AD access tokens to outgoing 
 
 3. Deploy the `dist/` folder to your hosting provider
 
-4. **Important**: Update the redirect URI in Azure Portal to match your production URL
+4. **Important**: Add all redirect URIs to Azure Portal (both local and production):
+   - Add `http://localhost:4200` and `https://localhost:4200` for local testing
+   - Add `https://mudasarahmad42.github.io/AzureAuthViewer` for GitHub Pages
+   - The app automatically uses the correct redirect URI based on the environment
 
 ## Additional Resources
 

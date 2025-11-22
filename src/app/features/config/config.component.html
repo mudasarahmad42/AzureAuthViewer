@@ -75,14 +75,17 @@
           }
 
           <mat-form-field appearance="outline" class="config__field">
-            <mat-label>Redirect URI</mat-label>
+            <mat-label>Redirect URI (Current Environment)</mat-label>
             <input
               matInput
               formControlName="redirectUri"
-              placeholder="http://localhost:4200"
+              [placeholder]="currentRedirectUri"
               required
             />
-            <mat-hint>The redirect URI registered in Azure AD (must match the platform type)</mat-hint>
+            <mat-hint>
+              Current environment: <strong>{{ environmentName }}</strong><br>
+              This redirect URI is auto-detected. Make sure all redirect URIs listed below are added to Azure AD.
+            </mat-hint>
             @if (getFormControlError('redirectUri')) {
               <mat-error>{{ getFormControlError('redirectUri') }}</mat-error>
             }
@@ -105,8 +108,18 @@
                     <ul>
                       <li>If you see a <strong>Web</strong> platform, delete it</li>
                       <li>Click <strong>"Add a platform"</strong> → Select <strong>"Single-page application"</strong></li>
-                      <li>Add the redirect URI: <code>{{ configForm.get('redirectUri')?.value || 'http://localhost:4200' }}</code></li>
-                      <li>If using HTTPS: Also add <code>https://localhost:4200</code></li>
+                      <li><strong>Add ALL of these redirect URIs</strong> (for both local testing and production):
+                        <ul style="margin-top: 0.5rem;">
+                          @for (uri of allRedirectUris; track uri) {
+                            <li style="margin: 0.25rem 0;">
+                              <code>{{ uri }}</code>
+                              @if (uri === currentRedirectUri) {
+                                <strong style="color: green;"> (Current - {{ environmentName }})</strong>
+                              }
+                            </li>
+                          }
+                        </ul>
+                      </li>
                       <li>Click <strong>Configure</strong></li>
                     </ul>
                   </li>
@@ -117,6 +130,17 @@
                     </ul>
                   </li>
                 </ol>
+                
+                <div class="config__help-note" style="margin-top: 1rem; padding: 0.75rem; background-color: #e3f2fd; border-left: 4px solid #2196f3;">
+                  <mat-icon style="color: #2196f3;">info</mat-icon>
+                  <div>
+                    <strong>Why add multiple redirect URIs?</strong><br>
+                    You need to add both local development URLs (<code>http://localhost:4200</code> and <code>https://localhost:4200</code>) 
+                    and the production URL (<code>https://mudasarahmad42.github.io/AzureAuthViewer</code>) to Azure AD. 
+                    This allows you to test locally and then deploy to GitHub Pages without changing Azure AD settings. 
+                    Azure AD will automatically use the correct redirect URI based on where the authentication request originates.
+                  </div>
+                </div>
 
                 <div class="config__help-note">
                   <mat-icon>warning</mat-icon>

@@ -1,4 +1,5 @@
 import { Injectable, signal, computed } from '@angular/core';
+import { getCurrentRedirectUri } from '../utils/environment.util';
 
 export interface ApiConfig {
   apiBaseUrl: string;
@@ -92,6 +93,7 @@ export class ConfigService {
 
   /**
    * Load configuration from localStorage
+   * Updates the redirect URI to match the current environment
    */
   private loadFromStorage(): void {
     try {
@@ -100,7 +102,17 @@ export class ConfigService {
         const config = JSON.parse(stored) as AppConfig;
         // Validate the configuration
         if (this.isValidConfig(config)) {
-          this.config.set(config);
+          // Always update redirect URI to match current environment
+          // This ensures correct redirect URI is used even if config was saved in different environment
+          const currentRedirectUri = getCurrentRedirectUri();
+          if (config.azure.redirectUri !== currentRedirectUri) {
+            console.log(`[ConfigService] Updating redirect URI from "${config.azure.redirectUri}" to "${currentRedirectUri}" to match current environment`);
+            config.azure.redirectUri = currentRedirectUri;
+            // Save the updated config back to localStorage
+            this.setConfig(config);
+          } else {
+            this.config.set(config);
+          }
         } else {
           localStorage.removeItem(STORAGE_KEY);
         }
@@ -135,8 +147,10 @@ export class ConfigService {
    */
   initialize(config: AppConfig): void {
     this.setConfig(config);
+    // Get base href for proper routing
+    const baseHref = document.querySelector('base')?.getAttribute('href') || '/';
     // Reload page to ensure MSAL is reinitialized with new configuration
-    window.location.href = '/';
+    window.location.href = baseHref;
   }
 }
 

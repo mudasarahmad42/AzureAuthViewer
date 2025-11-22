@@ -8,7 +8,7 @@
     "start:https:cert": "ng serve --ssl --ssl-cert ./ssl/server.crt --ssl-key ./ssl/server.key",
     "build": "ng build",
     "build:gh-pages": "ng build --configuration production --base-href /AzureAuthViewer/",
-    "deploy:gh-pages": "npm run build:gh-pages && npx gh-pages -d dist/azure-auth-viewer -b gh-pages",
+    "deploy:gh-pages": "npm run build:gh-pages && powershell -Command \"if (Test-Path 'dist/azure-auth-viewer/browser/index.html') { Copy-Item 'dist/azure-auth-viewer/browser/index.html' 'dist/azure-auth-viewer/browser/404.html' -Force }\" && npx gh-pages -d dist/azure-auth-viewer/browser -b gh-pages",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
   },

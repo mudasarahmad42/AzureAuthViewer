@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { MsalService } from '@azure/msal-angular';
 import { AuthError } from '@azure/msal-browser';
+import { getCurrentRedirectUri } from '../../utils/environment.util';
 
 @Component({
   selector: 'app-msal-redirect-handler',
@@ -32,7 +33,7 @@ export class MsalRedirectHandlerComponent {
               '3. Go to Authentication section\n' +
               '4. Delete any "Web" platform configurations\n' +
               '5. Add a "Single-page application" platform\n' +
-              '6. Add redirect URI: ' + window.location.origin + '\n' +
+              '6. Add redirect URI: ' + getCurrentRedirectUri() + '\n' +
               '7. Save the changes\n\n' +
               'See the configuration page for detailed instructions.'
             );

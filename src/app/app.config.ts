@@ -21,6 +21,7 @@ import {
 import { routes } from './app.routes';
 import { ConfigService } from './core/services/config.service';
 import { msalInterceptor } from './core/interceptors/msal.interceptor';
+import { getBaseUrl } from './core/utils/environment.util';
 
 /**
  * MSAL Instance Factory
@@ -40,10 +41,17 @@ export function MSALInstanceFactory(): IPublicClientApplication {
     // Ignore errors
   }
 
-  // Use config if available, otherwise use defaults
-  const redirectUri = azureConfig?.redirectUri || window.location.origin;
+  // Always calculate redirect URI from current environment to ensure it's correct
+  // This prevents issues when stored config has incorrect redirect URI from different environment
+  const currentRedirectUri = getBaseUrl();
+  
+  // Use stored config values if available, but always use current calculated redirect URI
+  const redirectUri = currentRedirectUri;
   const clientId = azureConfig?.clientId || '00000000-0000-0000-0000-000000000000';
   const authority = azureConfig?.authority || `https://login.microsoftonline.com/common`;
+  
+  // Log the redirect URI being used for debugging
+  console.log('[MSAL] Using redirect URI:', redirectUri);
   
   const msalInstance = new PublicClientApplication({
     auth: {

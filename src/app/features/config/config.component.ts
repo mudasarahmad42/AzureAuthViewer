@@ -10,6 +10,7 @@ import { MatInputModule } from '@angular/material/input';
 import { Router } from '@angular/router';
 
 import { ConfigService, AppConfig } from '../../core/services/config.service';
+import { getBaseUrl, getAllRedirectUris, getCurrentRedirectUri, getEnvironmentName } from '../../core/utils/environment.util';
 
 @Component({
   selector: 'app-config',
@@ -36,6 +37,28 @@ export class ConfigComponent {
 
   readonly generatedScopes = signal<string[]>([]);
 
+  /**
+   * Get the current redirect URI (automatically detected based on environment)
+   */
+  get currentRedirectUri(): string {
+    return getCurrentRedirectUri();
+  }
+
+  /**
+   * Get all redirect URIs that should be added to Azure AD
+   * This includes both local development and production URLs
+   */
+  get allRedirectUris(): string[] {
+    return getAllRedirectUris();
+  }
+
+  /**
+   * Get the current environment name
+   */
+  get environmentName(): string {
+    return getEnvironmentName();
+  }
+
   constructor() {
     // Load existing config if available
     const existingConfig = this.configService.getConfig();
@@ -44,7 +67,7 @@ export class ConfigComponent {
       apiBaseUrl: [existingConfig?.api.apiBaseUrl || '', [Validators.required, Validators.pattern(/^https?:\/\/.+/)]],
       tenantId: [existingConfig?.azure.tenantId || '', Validators.required],
       clientId: [existingConfig?.azure.clientId || '', Validators.required],
-      redirectUri: [existingConfig?.azure.redirectUri || window.location.origin, Validators.required]
+      redirectUri: [existingConfig?.azure.redirectUri || getCurrentRedirectUri(), Validators.required]
     });
 
     // Auto-generate scopes when clientId changes
@@ -95,7 +118,7 @@ export class ConfigComponent {
         tenantId,
         clientId,
         authority,
-        redirectUri: formValue.redirectUri.trim() || window.location.origin,
+        redirectUri: formValue.redirectUri.trim() || getCurrentRedirectUri(),
         apiScopes
       }
     };
