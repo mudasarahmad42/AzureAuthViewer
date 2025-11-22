@@ -46,25 +46,6 @@ export function getCurrentRedirectUri(): string {
 }
 
 /**
- * Get all possible redirect URIs for Azure AD configuration
- * Returns only production URLs (no localhost)
- */
-export function getAllRedirectUris(): string[] {
-  const uris: string[] = [];
-  
-  // Include GitHub Pages URL
-  uris.push('https://mudasarahmad42.github.io/AzureAuthViewer');
-  
-  // Add current URL if it's not already in the list and not localhost
-  const current = getCurrentRedirectUri();
-  if (!uris.includes(current) && !isLocalhost()) {
-    uris.push(current);
-  }
-  
-  return [...new Set(uris)]; // Remove duplicates
-}
-
-/**
  * Get a human-readable environment name
  */
 export function getEnvironmentName(): string {

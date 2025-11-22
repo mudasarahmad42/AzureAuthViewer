@@ -10,7 +10,7 @@ import { MatInputModule } from '@angular/material/input';
 import { Router } from '@angular/router';
 
 import { ConfigService, AppConfig } from '../../core/services/config.service';
-import { getBaseUrl, getAllRedirectUris, getCurrentRedirectUri, getEnvironmentName } from '../../core/utils/environment.util';
+import { getCurrentRedirectUri, getEnvironmentName } from '../../core/utils/environment.util';
 
 @Component({
   selector: 'app-config',
@@ -42,14 +42,6 @@ export class ConfigComponent {
    */
   get currentRedirectUri(): string {
     return getCurrentRedirectUri();
-  }
-
-  /**
-   * Get all redirect URIs that should be added to Azure AD
-   * This includes both local development and production URLs
-   */
-  get allRedirectUris(): string[] {
-    return getAllRedirectUris();
   }
 
   /**

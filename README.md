@@ -14,7 +14,7 @@ A lightweight Angular web application for viewing and managing Azure AD access t
 
 ## Prerequisites
 
-- Node.js (v18 or higher)
+- Node.js (v20.19 or higher, or v22.12 or higher) - Required by Angular CLI
 - npm (v9 or higher)
 - An Azure AD app registration configured as a **Single-page application (SPA)**
 
@@ -63,21 +63,6 @@ The application will automatically generate API scopes based on your Client ID:
    - Add permission to your backend API
    - Grant admin consent if required
 
-### Step 3: Running with HTTPS (Optional)
-
-If your backend API requires HTTPS, you can run the Angular dev server with HTTPS:
-
-```bash
-npm run start:https
-```
-
-Or with custom SSL certificates:
-
-```bash
-npm run start:https:cert
-```
-
-The application is configured to use HTTPS by default (check `angular.json` for SSL settings).
 
 ## Running the Application
 
@@ -291,12 +276,17 @@ The `msalInterceptor` automatically attaches Azure AD access tokens to outgoing 
 
 See [DEPLOY.md](DEPLOY.md) for detailed deployment instructions.
 
-Quick deployment:
-1. Push your code to GitHub
-2. Enable GitHub Pages in repository settings (use GitHub Actions)
-3. The workflow will automatically build and deploy on push to `main`/`master`
+**Quick deployment:**
+```bash
+npm run deploy
+```
 
-Your app will be available at: `https://YOUR_USERNAME.github.io/REPOSITORY_NAME/`
+Or manually:
+1. Push your code to the `gh-pages` branch
+2. Enable GitHub Pages in repository settings (use GitHub Actions)
+3. The workflow will automatically build and deploy
+
+Your app will be available at: `https://mudasarahmad42.github.io/AzureAuthViewer/`
 
 ## License
 
