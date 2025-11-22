@@ -88,6 +88,8 @@ git push origin gh-pages  # This will trigger the deployment
 4. Under **Source**, select **GitHub Actions** (not "Deploy from a branch")
 5. The workflow will automatically run when you push to `gh-pages` branch
 
+**Important**: Make sure you select **"GitHub Actions"** and NOT **"Deploy from a branch"**. If you select "Deploy from a branch", GitHub will run the automatic `pages-build-deployment` workflow in addition to your custom workflow, causing duplicate deployments.
+
 ## Step 4a: Fix Environment Protection Rules (If Needed)
 
 If you see an error: **"Branch 'gh-pages' is not allowed to deploy to github-pages due to environment protection rules"**, follow these steps:
@@ -149,6 +151,14 @@ You can also trigger the deployment manually:
 - Clear your browser cache
 - Check that the workflow completed successfully
 - Verify the Pages source is set to "GitHub Actions"
+
+### Seeing Two Workflows (pages-build-deployment and Deploy to GitHub Pages)
+If you see both `pages-build-deployment` and `Deploy to GitHub Pages` workflows running:
+1. Go to **Settings** → **Pages**
+2. Under **Source**, make sure **"GitHub Actions"** is selected (NOT "Deploy from a branch")
+3. If it was set to "Deploy from a branch", change it to "GitHub Actions"
+4. The `pages-build-deployment` workflow will stop running automatically
+5. Only your custom "Deploy to GitHub Pages" workflow will run
 
 ### Environment Protection Rules Error
 If you see: **"Branch 'gh-pages' is not allowed to deploy to github-pages due to environment protection rules"**:
