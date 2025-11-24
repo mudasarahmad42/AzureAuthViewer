@@ -98,8 +98,8 @@ export class ConfigComponent {
     const tenantId = formValue.tenantId.trim();
     const clientId = formValue.clientId.trim();
 
-    // Build authority from tenantId
-    const authority = `https://login.microsoftonline.com/${tenantId}`;
+    // Build authority from tenantId (using v2.0 endpoint)
+    const authority = `https://login.microsoftonline.com/${tenantId}/v2.0`;
 
     // Get generated scopes
     const apiScopes = this.generatedScopes();

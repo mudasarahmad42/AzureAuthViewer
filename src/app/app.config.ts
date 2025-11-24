@@ -48,7 +48,7 @@ export function MSALInstanceFactory(): IPublicClientApplication {
   // Use stored config values if available, but always use current calculated redirect URI
   const redirectUri = currentRedirectUri;
   const clientId = azureConfig?.clientId || '00000000-0000-0000-0000-000000000000';
-  const authority = azureConfig?.authority || `https://login.microsoftonline.com/common`;
+  const authority = azureConfig?.authority || `https://login.microsoftonline.com/common/v2.0`;
   
   // Log the redirect URI being used for debugging
   console.log('[MSAL] Using redirect URI:', redirectUri);
