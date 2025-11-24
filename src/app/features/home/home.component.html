@@ -266,6 +266,15 @@
         <button mat-button type="button" (click)="refreshToken()">Refresh token</button>
         <button mat-stroked-button type="button" color="warn" (click)="logout()">Logout</button>
       } @else {
+        <button
+          mat-stroked-button
+          type="button"
+          color="warn"
+          (click)="clearConfig()"
+        >
+          <mat-icon>delete</mat-icon>
+          Clear Configuration
+        </button>
         <button mat-flat-button color="primary" type="button" (click)="login()">Login with Azure AD</button>
       }
     </mat-card-actions>

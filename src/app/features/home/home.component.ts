@@ -10,6 +10,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { AuthService } from '../../core/services/auth.service';
+import { ConfigService } from '../../core/services/config.service';
 import { JwtDecoderService } from '../../core/services/jwt-decoder.service';
 import { JsonViewerComponent } from '../../shared/components/json-viewer/json-viewer.component';
 
@@ -34,6 +35,7 @@ import { JsonViewerComponent } from '../../shared/components/json-viewer/json-vi
 })
 export class HomeComponent {
   private readonly auth = inject(AuthService);
+  private readonly configService = inject(ConfigService);
   private readonly decoder = inject(JwtDecoderService);
   private readonly snackBar = inject(MatSnackBar);
 
@@ -228,6 +230,26 @@ export class HomeComponent {
         verticalPosition: 'top',
         panelClass: ['error-snackbar']
       });
+    }
+  }
+
+  /**
+   * Clear configuration from localStorage
+   */
+  clearConfig(): void {
+    if (confirm('Are you sure you want to delete the configuration? This will clear all saved Azure AD credentials and you will need to reconfigure the application.')) {
+      this.configService.clearConfig();
+      this.snackBar.open('Configuration cleared successfully', 'Close', {
+        duration: 3000,
+        horizontalPosition: 'end',
+        verticalPosition: 'top'
+      });
+      
+      // Reload page to reset MSAL and app state
+      setTimeout(() => {
+        const baseHref = document.querySelector('base')?.getAttribute('href') || '/';
+        window.location.href = baseHref;
+      }, 1000);
     }
   }
 }
