@@ -1,0 +1,22 @@
+<div class="json-viewer">
+  <div class="json-viewer__header">
+    <strong>{{ label }}</strong>
+    <button
+      mat-icon-button
+      type="button"
+      [disabled]="!formatted()"
+      matTooltip="Copy JSON to clipboard"
+      (click)="copyToClipboard()"
+      aria-label="Copy JSON"
+    >
+      <mat-icon>content_copy</mat-icon>
+    </button>
+  </div>
+
+  @if (formatted(); as content) {
+    <pre class="json-viewer__content" [innerHTML]="formattedHtml()"></pre>
+  } @else {
+    <p class="json-viewer__placeholder">{{ emptyState }}</p>
+  }
+</div>
+

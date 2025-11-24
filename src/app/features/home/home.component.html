@@ -1,0 +1,283 @@
+<section class="home">
+  <mat-card appearance="outlined">
+    <mat-card-header>
+      <mat-card-title>Azure AD Authentication</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+      @if (isLoading()) {
+        <div class="home__loading">
+          <mat-progress-spinner diameter="32" mode="indeterminate"></mat-progress-spinner>
+          <span>Fetching access token...</span>
+        </div>
+      }
+
+      @if (error()) {
+        <div class="home__error" role="alert">
+          <mat-icon color="warn">error</mat-icon>
+          <span>{{ error() }}</span>
+        </div>
+      }
+
+      @if (isAuthenticated()) {
+        <p class="home__status success">
+          <mat-icon color="primary">verified_user</mat-icon>
+          You are signed in. Your access token is ready for API calls.
+        </p>
+
+        <!-- Profile Section -->
+        @if (profileName() || profileEmail()) {
+          <div class="home__profile">
+            <div class="home__profile-avatar">
+              <span class="home__profile-initials">{{ profileInitials() }}</span>
+            </div>
+            <div class="home__profile-info">
+              @if (profileName()) {
+                <div class="home__profile-name">{{ profileName() }}</div>
+              }
+              @if (profileEmail()) {
+                <div class="home__profile-email">
+                  <mat-icon class="home__profile-icon">email</mat-icon>
+                  {{ profileEmail() }}
+                </div>
+              }
+              @if (profileIssuedAt()) {
+                <div class="home__profile-meta">
+                  <mat-icon class="home__profile-icon">schedule</mat-icon>
+                  <span><strong>Issued at:</strong> {{ profileIssuedAt() | date:'medium' }}</span>
+                </div>
+              }
+              @if (profileExpiresAt()) {
+                <div class="home__profile-meta">
+                  <mat-icon class="home__profile-icon">event</mat-icon>
+                  <span><strong>Expires at:</strong> {{ profileExpiresAt() | date:'medium' }}</span>
+                </div>
+              }
+              @if (tokenLifetime() !== null) {
+                <div class="home__profile-meta">
+                  <mat-icon class="home__profile-icon">timer</mat-icon>
+                  <span><strong>Token lifetime:</strong> {{ formatDuration(tokenLifetime()) }}</span>
+                </div>
+              }
+              @if (remainingLifetime() !== null) {
+                <div class="home__profile-meta">
+                  <mat-icon class="home__profile-icon" [style.color]="remainingLifetime()! < 300000 ? 'red' : remainingLifetime()! < 900000 ? 'orange' : ''">hourglass_empty</mat-icon>
+                  <span [style.color]="remainingLifetime()! < 300000 ? 'red' : remainingLifetime()! < 900000 ? 'orange' : ''">
+                    <strong>Remaining:</strong> {{ formatDuration(remainingLifetime()) }}
+                    @if (remainingLifetime() === 0) {
+                      <strong> (Expired)</strong>
+                    }
+                  </span>
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        <mat-accordion class="home__accordion">
+          <mat-expansion-panel expanded>
+            <mat-expansion-panel-header>
+              <mat-panel-title>Access Token</mat-panel-title>
+              <mat-panel-description>Raw JWT returned by Azure AD</mat-panel-description>
+            </mat-expansion-panel-header>
+
+            <div class="home__token-container">
+              <pre class="home__token">{{ token() }}</pre>
+              <button
+                mat-icon-button
+                type="button"
+                (click)="copyToken()"
+                [attr.aria-label]="'Copy access token'"
+                matTooltip="Copy token to clipboard"
+                class="home__copy-button"
+              >
+                <mat-icon>content_copy</mat-icon>
+              </button>
+            </div>
+          </mat-expansion-panel>
+
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>Decoded Token</mat-panel-title>
+              <mat-panel-description>Claims &amp; values</mat-panel-description>
+            </mat-expansion-panel-header>
+
+            @if (decodedToken(); as decoded) {
+              <app-json-viewer
+                label="Token Claims"
+                [value]="decoded"
+                emptyState="No claims available."
+              />
+            } @else {
+              <div class="home__error">
+                <p><strong>Unable to decode token.</strong></p>
+                @if (decodeError()) {
+                  <p>Error: {{ decodeError() }}</p>
+                } @else {
+                  <p>Make sure you have a valid JWT token. Check the browser console for more details.</p>
+                }
+                @if (token()) {
+                  <details style="margin-top: 1rem;">
+                    <summary style="cursor: pointer; font-weight: 500;">Token preview (first 100 characters)</summary>
+                    <pre style="margin-top: 0.5rem; padding: 0.5rem; background: #f5f5f5; border-radius: 4px; overflow-x: auto;">{{ token()?.substring(0, 100) }}...</pre>
+                  </details>
+                }
+              </div>
+            }
+          </mat-expansion-panel>
+
+          @if (lastRefreshRequest() || lastRefreshResponse()) {
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>Refresh Token Debug</mat-panel-title>
+                <mat-panel-description>
+                  @if (isLoading()) {
+                    <mat-icon style="font-size: 16px; vertical-align: middle;">sync</mat-icon>
+                    In progress...
+                  } @else if (lastRefreshResponse()?.success) {
+                    <mat-icon style="font-size: 16px; vertical-align: middle; color: green;">check_circle</mat-icon>
+                    Completed
+                  } @else if (lastRefreshResponse()?.success === false) {
+                    <mat-icon style="font-size: 16px; vertical-align: middle; color: red;">error</mat-icon>
+                    Failed
+                  } @else {
+                    Request details
+                  }
+                </mat-panel-description>
+              </mat-expansion-panel-header>
+
+              <div class="home__refresh-debug">
+                @if (lastRefreshRequest(); as request) {
+                  <div class="home__refresh-section">
+                    <h4>
+                      <mat-icon>send</mat-icon>
+                      Azure Endpoint Called
+                    </h4>
+                    <div class="home__refresh-info">
+                      <div class="home__refresh-row">
+                        <strong>Timestamp:</strong>
+                        <span>{{ request.timestamp | date:'medium' }}</span>
+                      </div>
+                      <div class="home__refresh-row">
+                        <strong>Endpoint URL:</strong>
+                        <code>{{ request.endpoint }}</code>
+                      </div>
+                      <div class="home__refresh-row">
+                        <strong>Authority:</strong>
+                        <code>{{ request.authority }}</code>
+                      </div>
+                      <div class="home__refresh-row">
+                        <strong>Requested Scopes:</strong>
+                        <div>
+                          @for (scope of request.scopes; track scope) {
+                            <mat-chip style="margin: 2px 4px 2px 0;">{{ scope }}</mat-chip>
+                          }
+                        </div>
+                      </div>
+                      @if (request.account) {
+                        <div class="home__refresh-row">
+                          <strong>Account:</strong>
+                          <span>{{ request.account.username }}</span>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                }
+
+                @if (lastRefreshResponse(); as response) {
+                  <div class="home__refresh-section" [class.success]="response.success" [class.error]="!response.success">
+                    <h4>
+                      <mat-icon>{{ response.success ? 'check_circle' : 'error' }}</mat-icon>
+                      Azure Response
+                    </h4>
+                    <div class="home__refresh-info">
+                      <div class="home__refresh-row">
+                        <strong>Timestamp:</strong>
+                        <span>{{ response.timestamp | date:'medium' }}</span>
+                      </div>
+                      <div class="home__refresh-row">
+                        <strong>Status:</strong>
+                        <span [style.color]="response.success ? 'green' : 'red'">
+                          {{ response.success ? 'Success' : 'Failed' }}
+                        </span>
+                      </div>
+                      @if (response.success) {
+                        <div class="home__refresh-row">
+                          <strong>Token Type:</strong>
+                          <span>{{ response.tokenType || 'Bearer' }}</span>
+                        </div>
+                        @if (response.expiresOn) {
+                          <div class="home__refresh-row">
+                            <strong>Expires On:</strong>
+                            <span>{{ response.expiresOn | date:'medium' }}</span>
+                          </div>
+                        }
+                        @if (response.scopes) {
+                          <div class="home__refresh-row">
+                            <strong>Granted Scopes:</strong>
+                            <div>
+                              @for (scope of response.scopes; track scope) {
+                                <mat-chip style="margin: 2px 4px 2px 0;">{{ scope }}</mat-chip>
+                              }
+                            </div>
+                          </div>
+                        }
+                        <div class="home__refresh-row" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(0, 0, 0, 0.12);">
+                          <strong style="color: #0f6b4d;">
+                            <mat-icon style="vertical-align: middle; font-size: 18px; width: 18px; height: 18px;">check_circle</mat-icon>
+                            Access token updated
+                          </strong>
+                          <span style="color: rgba(0, 0, 0, 0.6); margin-left: 0.5rem;">
+                            The new access token has been received and updated. You can copy it from the Access Token section above and view updated claims in the Decoded Token section.
+                          </span>
+                        </div>
+                      } @else {
+                        <div class="home__refresh-row">
+                          <strong>Error:</strong>
+                          <span style="color: red;">{{ response.error }}</span>
+                        </div>
+                        @if (response.errorDetails) {
+                          <div class="home__refresh-row">
+                            <strong>Error Details:</strong>
+                            <app-json-viewer
+                              [value]="response.errorDetails"
+                              emptyState="No error details available."
+                            />
+                          </div>
+                        }
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
+            </mat-expansion-panel>
+          }
+        </mat-accordion>
+      } @else {
+        <p class="home__status">
+          <mat-icon>info</mat-icon>
+          You are not signed in. Use the button below to authenticate with Azure AD.
+        </p>
+      }
+    </mat-card-content>
+
+    <mat-card-actions align="end">
+      @if (isAuthenticated()) {
+        <button mat-button type="button" (click)="refreshToken()">Refresh token</button>
+        <button mat-stroked-button type="button" color="warn" (click)="logout()">Logout</button>
+      } @else {
+        <button
+          mat-stroked-button
+          type="button"
+          color="warn"
+          (click)="clearConfig()"
+        >
+          <mat-icon>delete</mat-icon>
+          Clear Configuration
+        </button>
+        <button mat-flat-button color="primary" type="button" (click)="login()">Login with Azure AD</button>
+      }
+    </mat-card-actions>
+  </mat-card>
+</section>
+

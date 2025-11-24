@@ -1,0 +1,17 @@
+<div class="app-container">
+  <mat-toolbar color="primary">
+    <span class="app-title">AzureAuthViewer</span>
+    <span class="app-spacer"></span>
+    <nav class="app-nav">
+      <a mat-button routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        <mat-icon>home</mat-icon>
+        Home
+      </a>
+    </nav>
+  </mat-toolbar>
+
+  <main class="app-content">
+    <app-msal-redirect-handler></app-msal-redirect-handler>
+    <router-outlet></router-outlet>
+  </main>
+</div>

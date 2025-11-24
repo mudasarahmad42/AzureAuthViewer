@@ -1,0 +1,49 @@
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.app-title {
+  font-weight: 500;
+  font-size: 1.25rem;
+}
+
+.app-spacer {
+  flex: 1 1 auto;
+}
+
+.app-nav {
+  display: flex;
+  gap: 0.5rem;
+
+  a {
+    &.active {
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+  }
+}
+
+.app-content {
+  flex: 1;
+  padding: 1.5rem;
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .app-content {
+    padding: 1rem;
+  }
+
+  .app-nav {
+    a {
+      span {
+        display: none;
+      }
+    }
+  }
+}
+
